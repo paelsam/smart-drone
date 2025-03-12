@@ -1,0 +1,16 @@
+# Gitignore para python
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# virtualenv
+venv/
+env/
+
+
+# IDE
+.idea/
+.vscode/
+
