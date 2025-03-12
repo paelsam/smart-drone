@@ -7,6 +7,16 @@ from helpers.process_map import process_map
 # 2: Derecha
 # 3: Abajo
 
+def convert_operador(operador):
+    if operador == 0:
+        return "Izquierda"
+    if operador == 1:
+        return "Arriba"
+    if operador == 2:
+        return "Derecha"
+    if operador == 3:
+        return "Abajo"
+
 class Nodo:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None, profundidad=0, costo=0):
         self.matriz = matriz
@@ -14,21 +24,20 @@ class Nodo:
         self.operador = operador
         self.profundidad = profundidad
         self.posicion = posicion
-        self.ruta = []
         self.costo = costo
         self.objetivos = objetivos
         
     
     def ver_matriz(self):
+        result = ""
         for i in self.matriz:
             for j in i:
-                print(j, end=" ")
-            print("\n")
+                result += str(j) + " "
+            result += "\n"
+        return result
 
     def generar_hijos(self):
         
-        print("Posicion actual: ", self.posicion)
-
         hijos = []
                 
         arriba = None if self.posicion[0] - 1 <= 0 else self.matriz[self.posicion[0] - 1][self.posicion[1]]
@@ -50,56 +59,51 @@ class Nodo:
     
     def buscar_objetivos(self): 
         
-        nodos_visitados = []
+        initial_objetivos = self.objetivos  # Guardar la cantidad inicial de objetivos
         cola = Queue()
         cola.put(self)
-        
-        
-        while not cola.empty():
-            nodo = cola.get()
-            nodos_visitados.append(nodo.posicion)
-            
-            if self.objetivos == 0:
-                return nodo
+        objetivos_pos = []
+        visitados = set()
+        visitados.add( ( tuple(self.posicion), 0) )  # Inicializar con 0 objetivos recolectados
 
+        while not cola.empty():
+            
+            nodo = cola.get()
+
+            # Verificar si la posición actual es un objetivo no recolectado
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4:
-                print("Objetivo encontrado")
-                nodo.objetivos -= 1
-                        
-            for hijo in nodo.generar_hijos():
-                if hijo.posicion not in nodos_visitados:
+                if nodo.posicion not in objetivos_pos:
+                    objetivos_pos.append(nodo.posicion)
+                    print(objetivos_pos)
+                    if len(objetivos_pos) == initial_objetivos:
+                        return nodo
+
+            # Generar hijos y procesar
+            hijos = nodo.generar_hijos()
+
+            
+            for hijo in hijos:
+                current_k = len(objetivos_pos)  # Objetivos recolectados hasta ahora
+                estado = (tuple(hijo.posicion), current_k)
+                if estado not in visitados:
+                    visitados.add(estado)
                     cola.put(hijo)
-            
-            print("Nodo actual: ", nodo.posicion)
-            print(self.obtener_ruta(nodo))
-            print("Profundidad: ", nodo.profundidad)
-            
-            # print("Objetivos faltantes: ", nodo.objetivos)
-            # print(queue.qsize())
-            print("\n")
-            
-        
+                
         return None
             
             
-    def obtener_ruta(self, nodo):
+    def obtener_ruta(self):
         ruta = []
-        while nodo.padre != None:
-            self.ruta.append(nodo.posicion)
+        nodo = self
+        while nodo.padre:
+            ruta.append(nodo.posicion)
             nodo = nodo.padre
-        return self.ruta[::-1]
+        ruta.append(nodo.posicion)
+        return ruta[::-1]
         
         
-            
-            
-            
-            
-            
-            
-            
-
     def __str__(self):
-        return  f"Matriz: {self.matriz}\n Padre: {self.padre}\n Operador: {self.operador}\n Profundidad: {self.profundidad}\n Objetivos faltantes: {self.objetivos}\n Posicion: {self.posicion}\n Costo: {self.costo}\n"
+        return  f"Operador: {self.operador}\n Profundidad: {self.profundidad}\n Objetivos faltantes: {self.objetivos}\n Posicion: {self.posicion}\n Costo: {self.costo}\n"
     
 
 
@@ -123,6 +127,11 @@ for i in range(len(matrix)):
 # Crear nodo raíz
 root = Nodo(matrix, player_position, objetivos)
 # print(root.ver_matriz())
-print(root.buscar_objetivos())
+print("Posición inicial del jugador: ", root.posicion)
+print("Cantidad de objetivos: ", root.objetivos)
+objetivos = root.buscar_objetivos()
+print(objetivos.obtener_ruta())
+
+# print(objetivos)
 
 
