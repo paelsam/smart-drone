@@ -18,7 +18,7 @@ def convert_operador(operador):
         return "Abajo"
 
 class Nodo:
-    def __init__(self, matriz, posicion, objetivos, padre=None, operador=None, profundidad=0, costo=0):
+    def __init__(self, matriz, posicion, objetivos, padre=None, operador=None, profundidad=0, costo=0, objetivos_recolectados=[]):
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
@@ -26,6 +26,8 @@ class Nodo:
         self.posicion = posicion
         self.costo = costo
         self.objetivos = objetivos
+        self.objetivos_recolectados = objetivos_recolectados
+        self.visitados = set()
         
     
     def ver_matriz(self):
@@ -47,13 +49,43 @@ class Nodo:
         
         
         if arriba != 1 and arriba != None:
-            hijos.append(Nodo(self.matriz, (self.posicion[0] - 1, self.posicion[1]), self.objetivos, self, 1, self.profundidad + 1))
+            hijo = Nodo(self.matriz, (self.posicion[0] - 1, self.posicion[1]), self.objetivos, self, 1, self.profundidad + 1, 0, self.objetivos_recolectados)
+            hijos.append(hijo)
+            
+            # Añadir visitados del padre
+            for visitado in self.visitados:
+                hijo.visitados.add(visitado)
+            
+            
         if derecha != 1 and derecha != None:
-            hijos.append(Nodo(self.matriz, (self.posicion[0], self.posicion[1] + 1), self.objetivos, self, 2, self.profundidad + 1))
+            hijo = Nodo(self.matriz, (self.posicion[0], self.posicion[1] + 1), self.objetivos, self, 2, self.profundidad + 1, 0, self.objetivos_recolectados)
+            hijos.append(hijo)
+            
+            # Añadir visitados del padre
+            for visitado in self.visitados:
+                hijo.visitados.add(visitado)
+
         if abajo != 1 and abajo != None:
-            hijos.append(Nodo(self.matriz, (self.posicion[0] + 1, self.posicion[1]), self.objetivos, self, 3, self.profundidad + 1))
+            hijo = Nodo(self.matriz, (self.posicion[0] + 1, self.posicion[1]), self.objetivos, self, 3, self.profundidad + 1, 0, self.objetivos_recolectados)
+            hijos.append(hijo)
+            
+            # Añadir visitados del padre
+            for visitado in self.visitados:
+                hijo.visitados.add(visitado)
+        
         if izquierda != 1 and izquierda != None:
-            hijos.append(Nodo(self.matriz, (self.posicion[0], self.posicion[1] - 1), self.objetivos, self, 0, self.profundidad + 1))
+            hijo = Nodo(self.matriz, (self.posicion[0], self.posicion[1] - 1), self.objetivos, self, 0, self.profundidad + 1, 0, self.objetivos_recolectados)
+            hijos.append(hijo)
+            
+            # Añadir visitados del padre
+            for visitado in self.visitados:
+                hijo.visitados.add(visitado)
+            
+            
+        # if abajo != 1 and abajo != None:
+        #     hijos.append(Nodo(self.matriz, (self.posicion[0] + 1, self.posicion[1]), self.objetivos, self, 3, self.profundidad + 1, 0, self.objetivos_recolectados))
+        # if izquierda != 1 and izquierda != None:
+        #     hijos.append(Nodo(self.matriz, (self.posicion[0], self.posicion[1] - 1), self.objetivos, self, 0, self.profundidad + 1, 0, self.objetivos_recolectados))
                 
         return hijos
     
@@ -62,34 +94,55 @@ class Nodo:
         initial_objetivos = self.objetivos  # Guardar la cantidad inicial de objetivos
         cola = Queue()
         cola.put(self)
-        objetivos_pos = []
-        visitados = set()
-        visitados.add( ( tuple(self.posicion), 0) )  # Inicializar con 0 objetivos recolectados
+        self.visitados.add( ( tuple(self.posicion), 0) )  # Inicializar con 0 objetivos recolectados
 
         while not cola.empty():
             
             nodo = cola.get()
+            
 
             # Verificar si la posición actual es un objetivo no recolectado
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4:
-                if nodo.posicion not in objetivos_pos:
-                    objetivos_pos.append(nodo.posicion)
-                    print(objetivos_pos)
-                    if len(objetivos_pos) == initial_objetivos:
+                if nodo.posicion not in nodo.objetivos_recolectados:                    
+                    nodo.objetivos_recolectados.append(nodo.posicion)                    
+                    print("Objetivos recolectados: ", nodo.todos_objetivos_obtenidos())
+                    if nodo.todos_objetivos_obtenidos():
+                        print(nodo)
+                        break
                         return nodo
 
             # Generar hijos y procesar
             hijos = nodo.generar_hijos()
+            # print(f"Hijos de {nodo.posicion}:", [hijo.posicion for hijo in hijos])
 
             
             for hijo in hijos:
-                current_k = len(objetivos_pos)  # Objetivos recolectados hasta ahora
+                current_k = len(hijo.objetivos_recolectados) 
                 estado = (tuple(hijo.posicion), current_k)
-                if estado not in visitados:
-                    visitados.add(estado)
+                if estado not in nodo.visitados:
+                    hijo.visitados.add(estado)
                     cola.put(hijo)
+            
+            # print(nodo.obtener_ruta())
+            # print(nodo.visitados)
+
+                    
                 
         return None
+
+    def todos_objetivos_obtenidos(self):
+        ruta = self.obtener_ruta()
+        
+        if len(self.objetivos_recolectados) != self.objetivos:
+            return False
+        
+        # print("Objetivos recolectados: ", self.objetivos_recolectados)
+        print("Ruta: ", ruta)
+        
+        for pos in self.objetivos_recolectados:
+            if pos not in ruta:
+                return False
+        return True
             
             
     def obtener_ruta(self):
@@ -132,6 +185,8 @@ print("Cantidad de objetivos: ", root.objetivos)
 objetivos = root.buscar_objetivos()
 print(objetivos.obtener_ruta())
 
-# print(objetivos)
+print(objetivos)
+print("Posición final del jugador: ", objetivos.posicion)
+print("Objetivos recolectados: ", objetivos.objetivos_recolectados)
 
 
