@@ -1,5 +1,4 @@
 from queue import Queue
-import copy
 from helpers.process_map import process_map
 
 # Operadores
@@ -8,27 +7,17 @@ from helpers.process_map import process_map
 # 2: Derecha
 # 3: Abajo
 
-def convert_operador(operador):
-    if operador == 0:
-        return "Izquierda"
-    if operador == 1:
-        return "Arriba"
-    if operador == 2:
-        return "Derecha"
-    if operador == 3:
-        return "Abajo"
-
 class Nodo:
-    def __init__(self, matriz, posicion, objetivos, padre=None, operador=None, profundidad=0, costo=0):
+    def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
-        self.profundidad = profundidad
+        self.profundidad = 0 if padre == None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = costo
+        self.costo = 0 if padre == None else padre.costo + 1
         self.objetivos = objetivos
-        self.objetivos_obtenidos = 0
-        self.visitados = set()
+        self.visitados = padre.visitados if padre != None else set()
+        self.objetivos_posiciones = []
         
     
     def ver_matriz(self, matriz):
@@ -42,39 +31,20 @@ class Nodo:
     def generar_hijos(self):
         
         hijos = []
-                
-        arriba = None if self.posicion[0] - 1 < 0 else self.matriz[self.posicion[0] - 1][self.posicion[1]]
-        derecha = None if self.posicion[1] + 1 >= len(self.matriz) else  self.matriz[self.posicion[0]][self.posicion[1] + 1]
-        abajo = None if self.posicion[0] + 1 >= len(self.matriz) else self.matriz[self.posicion[0] + 1][self.posicion[1]]
-        izquierda = None if self.posicion[1] - 1 < 0 else self.matriz[self.posicion[0]][self.posicion[1] - 1]
         
+        direcciones = [(-1,0,1), (0,1,2), (1,0,3), (0,-1,0)]
         
-        if arriba != 1 and arriba != None:
-            nueva_matriz = copy.deepcopy(self.matriz)
-            hijo = Nodo(nueva_matriz, (self.posicion[0] - 1, self.posicion[1]), self.objetivos, self, 1, self.profundidad + 1)
-            hijo.objetivos_obtenidos = self.objetivos_obtenidos
-            hijo.visitados = self.visitados
-            hijos.append(hijo)
-        if derecha != 1 and derecha != None:
-            nueva_matriz = copy.deepcopy(self.matriz)
-            hijo = Nodo(nueva_matriz, (self.posicion[0], self.posicion[1] + 1), self.objetivos, self, 2, self.profundidad + 1)
-            hijo.objetivos_obtenidos = self.objetivos_obtenidos
-            hijo.visitados = self.visitados
-            hijos.append(hijo)
-        if abajo != 1 and abajo != None:
-            nueva_matriz = copy.deepcopy(self.matriz)
-            hijo = Nodo(nueva_matriz, (self.posicion[0] + 1, self.posicion[1]), self.objetivos, self, 3, self.profundidad + 1)
-            hijo.objetivos_obtenidos = self.objetivos_obtenidos
-            hijo.visitados = self.visitados
-            hijos.append(hijo)
-        if izquierda != 1 and izquierda != None:
-            nueva_matriz = copy.deepcopy(self.matriz)
-            hijo = Nodo(nueva_matriz, (self.posicion[0], self.posicion[1] - 1), self.objetivos, self, 0, self.profundidad + 1)
-            hijo.objetivos_obtenidos = self.objetivos_obtenidos
-            hijo.visitados = self.visitados
-            hijos.append(hijo)
-                
+        for dx, dy, op in direcciones:
+            x = self.posicion[0] + dx
+            y = self.posicion[1] + dy
+            if x >= 0 and x < len(self.matriz) and y >= 0 and y < len(self.matriz[0]):
+                if self.matriz[x][y] != 1:
+                    hijo = Nodo(self.matriz, (x, y), self.objetivos, self, op)
+                    hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
+                    hijos.append(hijo)
+        
         return hijos
+        
     
     def buscar_objetivos(self): 
         
@@ -87,10 +57,9 @@ class Nodo:
             nodo = cola.get()
             
             # Verificar si la posición actual es un objetivo no recolectado
-            if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4:
-                nodo.objetivos_obtenidos += 1
-                nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] = 0
-                if nodo.objetivos_obtenidos == nodo.objetivos:
+            if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
+                nodo.objetivos_posiciones.append(nodo.posicion)
+                if len(nodo.objetivos_posiciones) == nodo.objetivos:
                         return nodo
 
             # Generar hijos y procesar
@@ -98,12 +67,12 @@ class Nodo:
 
             
             for hijo in hijos:
-                estado = (tuple(hijo.posicion), hijo.objetivos_obtenidos)
+                estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)        
                     cola.put(hijo)       
             
-            print(nodo.obtener_ruta())  
+            # print(nodo.ver_matriz(nodo.obtener_ruta_matriz(nodo.obtener_ruta()))  )
             
                 
         return None
@@ -118,25 +87,21 @@ class Nodo:
         return ruta[::-1]
 
     def obtener_ruta_matriz(self, ruta):
-        # Hacer una matriz que muestre con flechas ascii la ruta a seguir
-        matriz = copy.deepcopy(self.matriz)
+        matriz = [fila[:] for fila in self.matriz]
         for i in ruta:
             matriz[i[0]][i[1]] = "x"
         return matriz
         
             
-        
-        
-        
     def __str__(self):
-        return  f"Operador: {self.operador}\n Profundidad: {self.profundidad}\n Objetivos faltantes: {self.objetivos}\n Posicion: {self.posicion}\n Costo: {self.costo}\n"
+        return  f"Operador: {self.operador}\n Profundidad: {self.profundidad}\n Objetivos faltantes: {self.objetivos - len(self.objetivos_posiciones)}\n Posicion: {self.posicion}\n Costo: {self.costo}\n"
     
 
 
 
 # Procesar matriz de texto 
 
-matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix.txt")
+matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix4.txt")
 player_position = None
 objetivos = 0
 queue = Queue()
@@ -158,8 +123,10 @@ print("Cantidad de objetivos: ", root.objetivos)
 objetivos = root.buscar_objetivos()
 
 print(objetivos)
+print(objetivos.obtener_ruta())
 
-# print(objetivos.ver_matriz(objetivos.obtener_ruta_matriz(objetivos.obtener_ruta())))
+
+print(objetivos.ver_matriz(objetivos.obtener_ruta_matriz(objetivos.obtener_ruta())))
     
     
 
