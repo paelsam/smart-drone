@@ -1,11 +1,7 @@
 from queue import Queue
 from helpers.process_map import process_map
-
-# Operadores
-# 0: Izquierda
-# 1: Arriba
-# 2: Derecha
-# 3: Abajo
+from helpers.determinar_operador import determinar_operador
+from colorama import Fore, Style
 
 class Nodo:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
@@ -16,7 +12,7 @@ class Nodo:
         self.posicion = posicion
         self.costo = 0 if padre == None else padre.costo + 1
         self.objetivos = objetivos
-        self.visitados = padre.visitados if padre != None else set()
+        self.visitados = set(padre.visitados) if padre != None else set() # Poniendo un set en el padre para evitar problemas de referencias
         self.objetivos_posiciones = []
         
     
@@ -64,16 +60,14 @@ class Nodo:
 
             # Generar hijos y procesar
             hijos = nodo.generar_hijos()
-
+            
             
             for hijo in hijos:
                 estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
+                # print("Estado: ", estado)   
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)        
-                    cola.put(hijo)       
-            
-            # print(nodo.ver_matriz(nodo.obtener_ruta_matriz(nodo.obtener_ruta()))  )
-            
+                    cola.put(hijo)         
                 
         return None
             
@@ -89,19 +83,19 @@ class Nodo:
     def obtener_ruta_matriz(self, ruta):
         matriz = [fila[:] for fila in self.matriz]
         for i in ruta:
-            matriz[i[0]][i[1]] = "x"
+            matriz[i[0]][i[1]] = Fore.RED + "x" + Style.RESET_ALL
         return matriz
         
             
     def __str__(self):
-        return  f"Operador: {self.operador}\n Profundidad: {self.profundidad}\n Objetivos faltantes: {self.objetivos - len(self.objetivos_posiciones)}\n Posicion: {self.posicion}\n Costo: {self.costo}\n"
+        return  f"Operador: {determinar_operador(self.operador)}\nProfundidad: {self.profundidad}\nObjetivos faltantes: {self.objetivos - len(self.objetivos_posiciones)}\nPosicion: {self.posicion}\nCosto: {self.costo}\n"
     
 
 
 
 # Procesar matriz de texto 
 
-matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix4.txt")
+matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix5.txt")
 player_position = None
 objetivos = 0
 queue = Queue()
@@ -117,7 +111,6 @@ for i in range(len(matrix)):
 
 # Crear nodo raíz
 root = Nodo(matrix, player_position, objetivos)
-# print(root.ver_matriz())
 print("Posición inicial del jugador: ", root.posicion)
 print("Cantidad de objetivos: ", root.objetivos)
 objetivos = root.buscar_objetivos()
@@ -127,9 +120,4 @@ print(objetivos.obtener_ruta())
 
 
 print(objetivos.ver_matriz(objetivos.obtener_ruta_matriz(objetivos.obtener_ruta())))
-    
-    
-
-# print(objetivos)
-
 
