@@ -16,7 +16,7 @@ class Nodo:
         self.objetivos_posiciones = []
         
     
-    def ver_matriz(self, matriz):
+    def ver_matriz(self, matriz) -> str:
         result = ""
         for i in matriz:
             for j in i:
@@ -24,7 +24,7 @@ class Nodo:
             result += "\n"
         return result
 
-    def generar_hijos(self):
+    def generar_hijos(self) -> list:
         
         hijos = []
         
@@ -42,7 +42,7 @@ class Nodo:
         return hijos
         
     
-    def buscar_objetivos(self): 
+    def buscar_objetivos(self) -> object | None: 
         
         cola = Queue()
         cola.put(self)
@@ -95,7 +95,7 @@ class Nodo:
 
 # Procesar matriz de texto 
 
-matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix5.txt")
+matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix2.txt")
 player_position = None
 objetivos = 0
 queue = Queue()
@@ -110,10 +110,10 @@ for i in range(len(matrix)):
             objetivos += 1
 
 # Crear nodo raíz
-root = Nodo(matrix, player_position, objetivos)
+root: Nodo = Nodo(matrix, player_position, objetivos)
 print("Posición inicial del jugador: ", root.posicion)
 print("Cantidad de objetivos: ", root.objetivos)
-objetivos = root.buscar_objetivos()
+objetivos: Nodo = root.buscar_objetivos()
 
 print(objetivos)
 print(objetivos.obtener_ruta())
