@@ -44,26 +44,27 @@ class NodoPD:
 
     def buscar_objetivos(self):
         cola_prioridad = []
-        # Si se trata la profundidad como negativa se esta volteando una cola de prioridad, simulando una pila
-        heapq.heappush(cola_prioridad, (-self.profundidad, id(self), self)) 
-        self.visitados.add((tuple(self.posicion), 0))  # Inicializar con 0 objetivos recolectados
+        contador_global = 0  # Contador global para orden determinístico
+        heapq.heappush(cola_prioridad, (-self.profundidad, self.operador, contador_global, self))
+        contador_global += 1
+        self.visitados.add((tuple(self.posicion), 0))
 
         while cola_prioridad:
-            _, _, nodo = heapq.heappop(cola_prioridad)  # Extraer el nodo con mayor profundidad
+            _, _, _, nodo = heapq.heappop(cola_prioridad)
 
-            # Verificar si la posición actual es un objetivo no recolectado
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
                     return nodo
 
-            # Generar hijos y procesar
             hijos = nodo.generar_hijos()
             for hijo in hijos:
                 estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)
-                    heapq.heappush(cola_prioridad, (-hijo.profundidad, id(hijo), hijo))
+                    # Insertar en el heap con (-profundidad, operador, contador, self)
+                    heapq.heappush(cola_prioridad, (-hijo.profundidad, hijo.operador, contador_global, hijo))
+                    contador_global += 1
 
         return None
 
@@ -86,11 +87,10 @@ class NodoPD:
 
 
 # Procesar matriz de texto
-matrix = process_map("./assets/maps_files/matrix.txt")
+matrix = process_map("./assets/maps_files/matrix2.txt")
 player_position = None
 objetivos = 0
 
-# Buscar la posición del jugador (numero 2) y la cantidad de objetivos (numero 4)
 for i in range(len(matrix)):
     for j in range(len(matrix[i])):
         if matrix[i][j] == 2:
@@ -98,7 +98,6 @@ for i in range(len(matrix)):
         if matrix[i][j] == 4:
             objetivos += 1
 
-# Crear nodo raíz
 root = NodoPD(matrix, player_position, objetivos)
 print("Posición inicial del jugador: ", root.posicion)
 print("Cantidad de objetivos: ", root.objetivos)

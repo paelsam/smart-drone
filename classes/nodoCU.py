@@ -12,7 +12,7 @@ class NodoCU:
         self.posicion = posicion
         self.costo = 0 if padre == None else padre.costo + self.calcular_costo_casilla()
         self.objetivos = objetivos
-        self.visitados = set(padre.visitados) if padre != None else set() # Poniendo un set en el padre para evitar problemas de referencias
+        self.visitados = set(padre.visitados) if padre != None else set()
         self.objetivos_posiciones = []
 
     def calcular_costo_casilla(self):
@@ -44,11 +44,13 @@ class NodoCU:
 
     def buscar_objetivos(self):
         cola_prioridad = []
-        heapq.heappush(cola_prioridad, (self.costo, id(self), self))
+        contador_global = 0  # Contador global para orden determinístico
+        heapq.heappush(cola_prioridad, (self.costo, self.operador, contador_global, self))
+        contador_global += 1
         self.visitados.add((tuple(self.posicion), 0))  # Inicializar con 0 objetivos recolectados
 
         while cola_prioridad:
-            _, _, nodo = heapq.heappop(cola_prioridad)
+            _, _, _, nodo = heapq.heappop(cola_prioridad)
 
             # Verificar si la posición actual es un objetivo no recolectado
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
@@ -60,10 +62,10 @@ class NodoCU:
             hijos = nodo.generar_hijos()
             for hijo in hijos:
                 estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
-                # print("Estado: ", estado)
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)
-                    heapq.heappush(cola_prioridad, (hijo.costo, id(hijo), hijo))
+                    heapq.heappush(cola_prioridad, (hijo.costo, hijo.operador, contador_global, hijo))
+                    contador_global += 1
 
         return None
 
@@ -86,13 +88,11 @@ class NodoCU:
 
 
 # Procesar matriz de texto
-
-matrix = process_map("./assets/maps_files/matrix.txt")
+matrix = process_map("./assets/maps_files/matrix9.txt")
 player_position = None
 objetivos = 0
 
 # Buscar la posición del jugador (numero 2) y la cantidad de objetivos (numero 4)
-
 for i in range(len(matrix)):
     for j in range(len(matrix[i])):
         if matrix[i][j] == 2:

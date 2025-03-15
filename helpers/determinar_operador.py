@@ -6,12 +6,12 @@
 
 def determinar_operador(operador):
     if operador == 0:
-        return "Izquierda"
-    elif operador == 1:
         return "Arriba"
+    elif operador == 1:
+        return "Izquierda"
     elif operador == 2:
-        return "Derecha"
-    elif operador == 3:
         return "Abajo"
+    elif operador == 3:
+        return "Derecha"
     else:
         return "Operador no válido"
