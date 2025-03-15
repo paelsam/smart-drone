@@ -4,9 +4,9 @@ from helpers.prompt_file import prompt_file
 from helpers.sprite import Sprite
 
 WIDTH = 600
-HEIGHT = 600
+HEIGHT = 600 
 
-# Iniciando pygame
+# Iniciando pygame 
 pygame.init()
 
 pygame.display.set_caption("Dron AI")
