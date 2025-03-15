@@ -3,7 +3,7 @@ from helpers.process_map import process_map
 from helpers.determinar_operador import determinar_operador
 from colorama import Fore, Style
 
-class Nodo:
+class NodoPD:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
         self.matriz = matriz
         self.padre = padre
@@ -37,7 +37,7 @@ class Nodo:
             y = self.posicion[1] + dy
             if x >= 0 and x < len(self.matriz) and y >= 0 and y < len(self.matriz[0]):
                 if self.matriz[x][y] != 1:
-                    hijo = Nodo(self.matriz, (x, y), self.objetivos, self, op)
+                    hijo = NodoPD(self.matriz, (x, y), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
                     hijos.append(hijo)
         return hijos
@@ -99,7 +99,7 @@ for i in range(len(matrix)):
             objetivos += 1
 
 # Crear nodo raíz
-root = Nodo(matrix, player_position, objetivos)
+root = NodoPD(matrix, player_position, objetivos)
 print("Posición inicial del jugador: ", root.posicion)
 print("Cantidad de objetivos: ", root.objetivos)
 objetivos = root.buscar_objetivos()
