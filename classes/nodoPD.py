@@ -56,8 +56,7 @@ class Nodo:
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
                     return nodo  
             
-            hijos = nodo.generar_hijos()
-            hijos.reverse() 
+            hijos = nodo.generar_hijos() 
             for hijo in hijos:
                 pila.append((hijo, nivel + 1))
 
