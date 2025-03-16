@@ -95,7 +95,7 @@ class Nodo:
 
 # Procesar matriz de texto 
 
-matrix = process_map("/home/paelsam/proyecto-ia-uv/assets/maps_files/matrix2.txt")
+matrix = process_map("./assets/maps_files/test4.txt")
 player_position = None
 objetivos = 0
 queue = Queue()

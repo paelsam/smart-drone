@@ -88,7 +88,7 @@ class NodoCU:
 
 
 # Procesar matriz de texto
-matrix = process_map("./assets/maps_files/matrix9.txt")
+matrix = process_map("./assets/maps_files/test4.txt")
 player_position = None
 objetivos = 0
 
