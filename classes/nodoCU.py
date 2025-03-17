@@ -85,28 +85,3 @@ class NodoCU:
 
     def __str__(self):
         return f"Operador: {determinar_operador(self.operador)}\nProfundidad: {self.profundidad}\nObjetivos faltantes: {self.objetivos - len(self.objetivos_posiciones)}\nPosicion: {self.posicion}\nCosto: {self.costo}\n"
-
-
-# Procesar matriz de texto
-matrix = process_map("./assets/maps_files/test4.txt")
-player_position = None
-objetivos = 0
-
-# Buscar la posición del jugador (numero 2) y la cantidad de objetivos (numero 4)
-for i in range(len(matrix)):
-    for j in range(len(matrix[i])):
-        if matrix[i][j] == 2:
-            player_position = [i, j]
-        if matrix[i][j] == 4:
-            objetivos += 1
-
-# Crear nodo raíz
-root = NodoCU(matrix, player_position, objetivos)
-print("Posición inicial del jugador: ", root.posicion)
-print("Cantidad de objetivos: ", root.objetivos)
-objetivos = root.buscar_objetivos()
-
-print(objetivos)
-print(objetivos.obtener_ruta())
-
-print(objetivos.ver_matriz(objetivos.obtener_ruta_matriz(objetivos.obtener_ruta())))
