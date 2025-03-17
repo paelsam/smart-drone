@@ -2,7 +2,7 @@ from helpers.process_map import process_map
 from helpers.determinar_operador import determinar_operador
 from colorama import Fore, Style
 
-class Nodo:
+class NodoPD:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
         self.matriz = matriz
         self.padre = padre
@@ -30,7 +30,7 @@ class Nodo:
             
             if 0 <= x < len(self.matriz) and 0 <= y < len(self.matriz[0]):  # Verificar límites
                 if self.matriz[x][y] != 1 and (x, y) not in self.camino:  # Evitar obstáculos y nodos visitados
-                    hijo = Nodo(self.matriz, (x, y), self.objetivos, self, op)
+                    hijo = NodoPD(self.matriz, (x, y), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
                     hijos.append(hijo)
         
@@ -49,7 +49,7 @@ class Nodo:
             visitados.add(estado)
 
             # expansión del árbol
-            print("    " * nivel + f"Profundidad: {nodo.profundidad}, Posicion: {nodo.posicion}")
+            # print("    " * nivel + f"Profundidad: {nodo.profundidad}, Posicion: {nodo.posicion}")
 
             if self.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)

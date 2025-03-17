@@ -4,6 +4,9 @@ from helpers.prompt_file import prompt_file
 from helpers.process_path import process_path
 from helpers.sprite import Sprite
 from classes.nodo import Nodo
+from classes.nodoCU import NodoCU
+from classes.nodoPD import NodoPD
+
 
 WIDTH = 600
 HEIGHT = 600 
@@ -106,7 +109,7 @@ while True:
         package_sprites.empty()
         
         
-        node_result = process_path(matrix, Nodo)
+        node_result = process_path(matrix, NodoPD)
         drone_position = node_result["player_position"]
         draw_matrix(matrix)  # Dibuja el fondo y crea el dron (si aún no existe)
         update_borders()
