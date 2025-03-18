@@ -31,13 +31,15 @@ class NodoPD:
 
     def generar_hijos(self):
         hijos = []
-        direcciones = [(-1, 0, 1), (0, 1, 2), (1, 0, 3), (0, -1, 0)]
-        for dx, dy, op in direcciones:
-            x = self.posicion[0] + dx
-            y = self.posicion[1] + dy
-            if x >= 0 and x < len(self.matriz) and y >= 0 and y < len(self.matriz[0]):
-                if self.matriz[x][y] != 1:
-                    hijo = NodoPD(self.matriz, (x, y), self.objetivos, self, op)
+        direcciones = [(-1, 0, 0), (0, -1, 1), (1, 0, 2), (0, 1, 3)]  # (dy, dx, operador)
+        
+        for dy, dx, op in direcciones:
+            y = self.posicion[0] + dy  # Mueve la fila
+            x = self.posicion[1] + dx  # Mueve la columna
+            
+            if 0 <= y < len(self.matriz) and 0 <= x < len(self.matriz[0]):
+                if self.matriz[y][x] != 1:
+                    hijo = NodoPD(self.matriz, (y, x), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
                     hijos.append(hijo)
         return hijos
@@ -87,7 +89,7 @@ class NodoPD:
 
 
 # Procesar matriz de texto
-matrix = process_map("./assets/maps_files/matrix2.txt")
+matrix = process_map("./assets/maps_files/matrix.txt")
 player_position = None
 objetivos = 0
 

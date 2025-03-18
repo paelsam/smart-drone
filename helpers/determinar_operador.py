@@ -14,4 +14,4 @@ def determinar_operador(operador):
     elif operador == 3:
         return "Derecha"
     else:
-        return "Operador no válido"
+        return "Operador no válido" 
