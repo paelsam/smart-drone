@@ -1,6 +1,7 @@
 from queue import Queue
 from helpers.process_map import process_map
 from helpers.determinar_operador import determinar_operador
+from helpers.process_path import process_path
 from colorama import Fore, Style
 
 class Nodo:
@@ -16,7 +17,7 @@ class Nodo:
         self.objetivos_posiciones = []
         
     
-    def ver_matriz(self, matriz):
+    def ver_matriz(self, matriz) -> str:
         result = ""
         for i in matriz:
             for j in i:
@@ -24,7 +25,7 @@ class Nodo:
             result += "\n"
         return result
 
-    def generar_hijos(self):
+    def generar_hijos(self) -> list:
         
         hijos = []
         
@@ -42,7 +43,7 @@ class Nodo:
         return hijos
         
     
-    def buscar_objetivos(self): 
+    def buscar_objetivos(self) -> object | None: 
         
         cola = Queue()
         cola.put(self)
@@ -89,35 +90,3 @@ class Nodo:
             
     def __str__(self):
         return  f"Operador: {determinar_operador(self.operador)}\nProfundidad: {self.profundidad}\nObjetivos faltantes: {self.objetivos - len(self.objetivos_posiciones)}\nPosicion: {self.posicion}\nCosto: {self.costo}\n"
-    
-
-
-
-# Procesar matriz de texto 
-
-matrix = process_map("./assets/maps_files/matrix.txt")
-player_position = None
-objetivos = 0
-queue = Queue()
-
-# Buscar la posición del jugador (numero 2) y la cantidad de objetivos (numero 4)
-
-for i in range(len(matrix)):
-    for j in range(len(matrix[i])):
-        if matrix[i][j] == 2:
-            player_position = [i, j]
-        if matrix[i][j] == 4:
-            objetivos += 1
-
-# Crear nodo raíz
-root = Nodo(matrix, player_position, objetivos)
-print("Posición inicial del jugador: ", root.posicion)
-print("Cantidad de objetivos: ", root.objetivos)
-objetivos = root.buscar_objetivos()
-
-print(objetivos)
-print(objetivos.obtener_ruta())
-
-
-print(objetivos.ver_matriz(objetivos.obtener_ruta_matriz(objetivos.obtener_ruta())))
-
