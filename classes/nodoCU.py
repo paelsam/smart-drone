@@ -31,11 +31,11 @@ class NodoCU:
 
     def generar_hijos(self):
         hijos = []
-        direcciones = [(-1, 0, 1), (0, 1, 2), (1, 0, 3), (0, -1, 0)]
+        direcciones = [(-1, 0, 0), (0, -1, 1), (1, 0, 2), (0, 1, 3)]  # (dy, dx, operador)
         for dx, dy, op in direcciones:
             x = self.posicion[0] + dx
             y = self.posicion[1] + dy
-            if x >= 0 and x < len(self.matriz) and y >= 0 and y < len(self.matriz[0]):
+            if 0 <= y < len(self.matriz) and 0 <= x < len(self.matriz[0]):
                 if self.matriz[x][y] != 1:
                     hijo = NodoCU(self.matriz, (x, y), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()

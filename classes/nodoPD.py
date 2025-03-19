@@ -1,66 +1,65 @@
 from helpers.process_map import process_map
 from helpers.determinar_operador import determinar_operador
 from colorama import Fore, Style
+from queue import LifoQueue
 
 class NodoPD:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
-        self.profundidad = 0 if padre == None else padre.profundidad + 1
+        self.profundidad = 0 if padre is None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = 0 if padre == None else padre.costo + 1
+        self.costo = 0 if padre is None else padre.costo + 1
         self.objetivos = objetivos
-        self.visitados = set(padre.visitados) if padre != None else set() # Poniendo un set en el padre para evitar problemas de referencias
+        self.visitados = set() if padre is None else set(padre.visitados)
         self.objetivos_posiciones = []
-        self.camino = padre.camino + [posicion] if padre else [posicion]  # Historial de posiciones en la rama
 
     def ver_matriz(self, matriz):
         result = ""
-        for fila in matriz:
-            result += " ".join(str(c) for c in fila) + "\n"
+        for i in matriz:
+            for j in i:
+                result += str(j) + " "
+            result += "\n"
         return result
 
     def generar_hijos(self):
         hijos = []
-        direcciones = [(-1, 0, 1), (0, 1, 2), (1, 0, 3), (0, -1, 0)]
-
-        for dx, dy, op in direcciones:
-            x, y = self.posicion[0] + dx, self.posicion[1] + dy
-            
-            if 0 <= x < len(self.matriz) and 0 <= y < len(self.matriz[0]):  # Verificar límites
-                if self.matriz[x][y] != 1 and (x, y) not in self.camino:  # Evitar obstáculos y nodos visitados
-                    hijo = NodoPD(self.matriz, (x, y), self.objetivos, self, op)
+        direcciones = [(-1, 0, 0), (0, -1, 1), (1, 0, 2), (0, 1, 3)]  # (dy, dx, operador)
+        
+        for dy, dx, op in direcciones:
+            y = self.posicion[0] + dy  # Mueve la fila
+            x = self.posicion[1] + dx  # Mueve la columna
+            if 0 <= y < len(self.matriz) and 0 <= x < len(self.matriz[0]):
+                if self.matriz[y][x] != 1:
+                    hijo = NodoPD(self.matriz, (y, x), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
+                    hijo.visitados.add((y, x))
                     hijos.append(hijo)
         
         return hijos
 
     def buscar_objetivos(self):
-        pila = [(self, 0)]  # (nodo, nivel de profundidad)
-        visitados = set()
+        pila = LifoQueue()
+        pila.put(self)
+        self.visitados.add((tuple(self.posicion), 0))
 
-        while pila:
-            nodo, nivel = pila.pop()
-            estado = (tuple(nodo.posicion), len(nodo.objetivos_posiciones))
-
-            if estado in visitados:
-                continue
-            visitados.add(estado)
-
-            # expansión del árbol
-            # print("    " * nivel + f"Profundidad: {nodo.profundidad}, Posicion: {nodo.posicion}")
+        while not pila.empty():
+            nodo = pila.get()
 
             if self.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
-                    return nodo  
-            
-            hijos = nodo.generar_hijos() 
-            for hijo in hijos:
-                pila.append((hijo, nivel + 1))
+                    return nodo
 
-        return None  
+            hijos = nodo.generar_hijos()
+            for hijo in reversed(hijos):
+                estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
+                if estado not in nodo.visitados:
+                    hijo.visitados.add(estado)
+                    pila.put(hijo)
+
+        return None
 
     def obtener_ruta(self):
         ruta = []

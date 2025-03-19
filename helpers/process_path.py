@@ -16,6 +16,7 @@ def process_path(matrix: list, algorithm) -> dict:
     return {
         "root": root,
         "player_position": player_position,
+        "resultado": objetivos_obtenidos,
         "objetivos": objetivos,
         "ruta": objetivos_obtenidos.obtener_ruta(),
         "matriz_ruta": objetivos_obtenidos.ver_matriz(objetivos_obtenidos.obtener_ruta_matriz(objetivos_obtenidos.obtener_ruta()))
