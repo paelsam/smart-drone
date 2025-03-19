@@ -9,7 +9,7 @@ def show_results_window(nodo_result, mapa_path):
     
     results_window = tk.Tk()
     results_window.title("Smart Drone - Resultados")
-    results_window.geometry("400x400")
+    results_window.geometry("400x500")
     results_window.resizable(False, False)
     
     
