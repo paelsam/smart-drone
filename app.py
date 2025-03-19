@@ -6,6 +6,7 @@ from helpers.sprite import Sprite
 from classes.nodo import Nodo
 from classes.nodoCU import NodoCU
 from classes.nodoPD import NodoPD
+from classes.nodoAV import NodoAvara
 
 
 WIDTH = 600
@@ -109,7 +110,7 @@ while True:
         package_sprites.empty()
         
          
-        node_result = process_path(matrix, NodoCU)
+        node_result = process_path(matrix, NodoAvara)
         drone_position = node_result["player_position"]
         draw_matrix(matrix)  # Dibuja el fondo y crea el dron (si aún no existe)
         update_borders()
