@@ -125,7 +125,8 @@ def start_pygame(algoritmo, mapa_path):
                 'ruta': node_result["ruta"],
                 'profundidad': node_result["resultado"].profundidad,
                 'costo': node_result["resultado"].costo,
-                'objetivos_posiciones': node_result["resultado"].objetivos_posiciones
+                'objetivos_posiciones': node_result["resultado"].objetivos_posiciones,
+                'tiempo_computo': node_result["tiempo_computo"]
             }
         
         

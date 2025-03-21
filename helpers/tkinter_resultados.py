@@ -26,7 +26,8 @@ def show_results_window(nodo_result, mapa_path):
         f"Archivo de mapa: {mapa_path}",
         f"Profundidad: {nodo_result['profundidad']}",
         f"Costo total: {nodo_result['costo']}",
-        f"Objetivos alcanzados: {len(nodo_result['objetivos_posiciones'])}"
+        f"Objetivos alcanzados: {len(nodo_result['objetivos_posiciones'])}",
+        f"Tiempo de cómputo: {nodo_result['tiempo_computo']:.4f} segundos"
     ]
     
     for label in labels:
