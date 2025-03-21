@@ -5,6 +5,7 @@ from helpers.sprite import Sprite
 from classes.nodo import Nodo
 from classes.nodoCU import NodoCU
 from classes.nodoPD import NodoPD
+from classes.nodoAV import NodoAvara
 
 MOVE_EVENT = pygame.USEREVENT + 1
 
@@ -26,7 +27,7 @@ def start_pygame(algoritmo, mapa_path):
         "Amplitud": Nodo,
         "Reducción de Coste": NodoCU,
         "Profundidad": NodoPD,
-        "Avaro": Nodo,  # Actualizar con clases reales
+        "Avaro": NodoAvara,  # Actualizar con clases reales
         "A*": Nodo
     }
     

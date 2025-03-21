@@ -40,7 +40,7 @@ def show_results_window(nodo_result, mapa_path):
     scrollbar.pack(side='right', fill='y')
     
     listbox = tk.Listbox(ruta_frame, yscrollcommand=scrollbar.set, width=50)
-    for posicion in reversed(nodo_result['ruta']):
+    for posicion in nodo_result['ruta']:
         listbox.insert('end', f"({posicion[0]}, {posicion[1]})")
     listbox.pack(fill='both', expand=True)
     scrollbar.config(command=listbox.yview)

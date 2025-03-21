@@ -1,5 +1,3 @@
-from queue import Queue
-
 def process_path(matrix: list, algorithm) -> dict:
     player_position = None
     objetivos = 0
