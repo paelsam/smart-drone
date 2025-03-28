@@ -14,6 +14,7 @@ class NodoAvara:
         self.objetivos = objetivos
         self.visitados = set(padre.visitados) if padre != None else set()
         self.objetivos_posiciones = []
+        self.nodos_expandidos = 0
 
     def calcular_costo_casilla(self):
         if self.matriz[self.posicion[0]][self.posicion[1]] == 3:
@@ -61,6 +62,7 @@ class NodoAvara:
         heapq.heappush(cola_prioridad, (self.distancia_promedio_a_objetivos(), self.operador, contador_global, self))
         contador_global += 1
         self.visitados.add((tuple(self.posicion), 0))  # Inicializar con 0 objetivos recolectados
+        nodos_expandidos = 0
 
         while cola_prioridad:
             _, _, _, nodo = heapq.heappop(cola_prioridad)
@@ -69,6 +71,7 @@ class NodoAvara:
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
+                    nodo.nodos_expandidos = nodos_expandidos
                     return nodo
 
             # Generar hijos y procesar
@@ -79,6 +82,8 @@ class NodoAvara:
                     hijo.visitados.add(estado)
                     heapq.heappush(cola_prioridad, (hijo.distancia_promedio_a_objetivos(), hijo.operador, contador_global, hijo))
                     contador_global += 1
+            
+            nodos_expandidos += 1
         return None
 
     def obtener_ruta(self):

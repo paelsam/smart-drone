@@ -25,6 +25,7 @@ def show_results_window(nodo_result, mapa_path):
         f"Algoritmo utilizado: {nodo_result['algoritmo']}",
         f"Archivo de mapa: {mapa_path}",
         f"Profundidad: {nodo_result['profundidad']}",
+        f"Nodos expandidos: {nodo_result['nodos_expandidos']}",
         f"Costo total: {nodo_result['costo']}",
         f"Objetivos alcanzados: {len(nodo_result['objetivos_posiciones'])}",
         f"Tiempo de cómputo: {nodo_result['tiempo_computo']:.4f} segundos"

@@ -23,7 +23,8 @@ def process_path(matrix: list, algorithm) -> dict:
         "objetivos": objetivos,
         "ruta": objetivos_obtenidos.obtener_ruta(),
         "matriz_ruta": objetivos_obtenidos.ver_matriz(objetivos_obtenidos.obtener_ruta_matriz(objetivos_obtenidos.obtener_ruta())),
-        "tiempo_computo": objetivos_obtenidos.tiempo_computo
+        "tiempo_computo": objetivos_obtenidos.tiempo_computo,
+        "nodos_expandidos": objetivos_obtenidos.nodos_expandidos
     }
     
     

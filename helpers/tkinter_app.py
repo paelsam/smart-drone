@@ -66,7 +66,3 @@ def start_selection():
     
     root.mainloop()
     return algoritmo_var.get(), mapa_seleccionado.get()
-
-if __name__ == "__main__":
-    algoritmo, mapa = start_selection()
-    print(f"Selección guardada: Algoritmo: {algoritmo}, Mapa: {mapa}")

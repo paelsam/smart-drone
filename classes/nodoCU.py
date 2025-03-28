@@ -8,12 +8,13 @@ class NodoCU:
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
-        self.profundidad = 0 if padre == None else padre.profundidad + 1
+        self.profundidad = 1 if padre == None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = 0 if padre == None else padre.costo + self.calcular_costo_casilla()
+        self.costo = self.calcular_costo_casilla() if padre == None else padre.costo + self.calcular_costo_casilla()
         self.objetivos = objetivos
         self.visitados = set(padre.visitados) if padre != None else set()
         self.objetivos_posiciones = []
+        self.nodos_expandidos = 0
 
     def calcular_costo_casilla(self):
         if self.matriz[self.posicion[0]][self.posicion[1]] == 3:
@@ -48,6 +49,7 @@ class NodoCU:
         heapq.heappush(cola_prioridad, (self.costo, self.operador, contador_global, self))
         contador_global += 1
         self.visitados.add((tuple(self.posicion), 0))  # Inicializar con 0 objetivos recolectados
+        nodos_expandidos = 0
 
         while cola_prioridad:
             _, _, _, nodo = heapq.heappop(cola_prioridad)
@@ -56,6 +58,7 @@ class NodoCU:
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
+                    nodo.nodos_expandidos = nodos_expandidos
                     return nodo
 
             # Generar hijos y procesar
@@ -66,6 +69,8 @@ class NodoCU:
                     hijo.visitados.add(estado)
                     heapq.heappush(cola_prioridad, (hijo.costo, hijo.operador, contador_global, hijo))
                     contador_global += 1
+            
+            nodos_expandidos += 1
 
         return None
 

@@ -10,9 +10,8 @@ def main_flow():
         # Ejecutar Pygame y obtener resultados
         nodo_result = start_pygame(algoritmo, mapa)
         
-        # Mostrar resultados en Tkinter
         if nodo_result:
-            nodo_result['algoritmo'] = algoritmo  # Agregar nombre del algoritmo
+            nodo_result['algoritmo'] = algoritmo 
             show_results_window(nodo_result, mapa)
 
 if __name__ == "__main__":
