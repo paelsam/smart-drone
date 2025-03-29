@@ -3,14 +3,14 @@ from helpers.process_map import process_map
 from helpers.determinar_operador import determinar_operador
 from colorama import Fore, Style
 
-class NodoCU:
+class NodoAvara:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
-        self.profundidad = 1 if padre == None else padre.profundidad + 1
+        self.profundidad = 0 if padre == None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = self.calcular_costo_casilla() if padre == None else padre.costo + self.calcular_costo_casilla()
+        self.costo = 0 if padre == None else padre.costo + self.calcular_costo_casilla()
         self.objetivos = objetivos
         self.visitados = set(padre.visitados) if padre != None else set()
         self.objetivos_posiciones = []
@@ -21,6 +21,17 @@ class NodoCU:
             return 8
         else:
             return 1
+
+    def distancia_manhattan(self, pos1, pos2):
+        # Calcula la distancia Manhattan entre dos posiciones (filas, columnas)
+        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+    def distancia_promedio_a_objetivos(self):
+        # Calcula la distancia promedio a todos los objetivos restantes
+        if not self.objetivos_posiciones:
+            return 0  # Si no hay objetivos restantes, la distancia es 0
+        distancias = [self.distancia_manhattan(self.posicion, obj) for obj in self.objetivos_posiciones]
+        return sum(distancias) / len(distancias)
 
     def ver_matriz(self, matriz):
         result = ""
@@ -33,12 +44,14 @@ class NodoCU:
     def generar_hijos(self):
         hijos = []
         direcciones = [(-1, 0, 0), (0, -1, 1), (1, 0, 2), (0, 1, 3)]  # (dy, dx, operador)
-        for dx, dy, op in direcciones:
-            x = self.posicion[0] + dx
-            y = self.posicion[1] + dy
+        
+        for dy, dx, op in direcciones:
+            y = self.posicion[0] + dy  # Mueve la fila
+            x = self.posicion[1] + dx  # Mueve la columna
+            
             if 0 <= y < len(self.matriz) and 0 <= x < len(self.matriz[0]):
-                if self.matriz[x][y] != 1:
-                    hijo = NodoCU(self.matriz, (x, y), self.objetivos, self, op)
+                if self.matriz[y][x] != 1:
+                    hijo = NodoAvara(self.matriz, (y, x), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
                     hijos.append(hijo)
         return hijos
@@ -46,7 +59,7 @@ class NodoCU:
     def buscar_objetivos(self):
         cola_prioridad = []
         contador_global = 0  # Contador global para orden determinístico
-        heapq.heappush(cola_prioridad, (self.costo, self.operador, contador_global, self))
+        heapq.heappush(cola_prioridad, (self.distancia_promedio_a_objetivos(), self.operador, contador_global, self))
         contador_global += 1
         self.visitados.add((tuple(self.posicion), 0))  # Inicializar con 0 objetivos recolectados
         nodos_expandidos = 0
@@ -67,11 +80,10 @@ class NodoCU:
                 estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)
-                    heapq.heappush(cola_prioridad, (hijo.costo, hijo.operador, contador_global, hijo))
+                    heapq.heappush(cola_prioridad, (hijo.distancia_promedio_a_objetivos(), hijo.operador, contador_global, hijo))
                     contador_global += 1
             
             nodos_expandidos += 1
-
         return None
 
     def obtener_ruta(self):

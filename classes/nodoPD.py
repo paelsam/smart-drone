@@ -8,12 +8,13 @@ class NodoPD:
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
-        self.profundidad = 0 if padre is None else padre.profundidad + 1
+        self.profundidad = 1 if padre is None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = 0 if padre is None else padre.costo + 1
+        self.costo = 1 if padre is None else padre.costo + 1
         self.objetivos = objetivos
         self.visitados = set() if padre is None else set(padre.visitados)
         self.objetivos_posiciones = []
+        self.nodos_expandidos = 0
 
     def ver_matriz(self, matriz):
         result = ""
@@ -43,6 +44,7 @@ class NodoPD:
         pila = LifoQueue()
         pila.put(self)
         self.visitados.add((tuple(self.posicion), 0))
+        nodos_expandidos = 0
 
         while not pila.empty():
             nodo = pila.get()
@@ -50,6 +52,7 @@ class NodoPD:
             if self.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
+                    nodo.nodos_expandidos = nodos_expandidos
                     return nodo
 
             hijos = nodo.generar_hijos()
@@ -58,6 +61,8 @@ class NodoPD:
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)
                     pila.put(hijo)
+                       
+            nodos_expandidos += 1
 
         return None
 

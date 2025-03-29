@@ -15,6 +15,7 @@ class Nodo:
         self.objetivos = objetivos
         self.visitados = set(padre.visitados) if padre != None else set() # Poniendo un set en el padre para evitar problemas de referencias
         self.objetivos_posiciones = []
+        self.nodos_expandidos = 0
         
     
     def ver_matriz(self, matriz) -> str:
@@ -29,14 +30,14 @@ class Nodo:
         
         hijos = []
         
-        direcciones = [(-1,0,1), (0,1,2), (1,0,3), (0,-1,0)]
+        direcciones = [(-1, 0, 0), (0, -1, 1), (1, 0, 2), (0, 1, 3)]  # (dy, dx, operador)
         
-        for dx, dy, op in direcciones:
-            x = self.posicion[0] + dx
-            y = self.posicion[1] + dy
-            if x >= 0 and x < len(self.matriz) and y >= 0 and y < len(self.matriz[0]):
-                if self.matriz[x][y] != 1:
-                    hijo = Nodo(self.matriz, (x, y), self.objetivos, self, op)
+        for dy, dx, op in direcciones:
+            y = self.posicion[0] + dy  # Mueve la fila
+            x = self.posicion[1] + dx  # Mueve la columna
+            if 0 <= y < len(self.matriz) and 0 <= x < len(self.matriz[0]):
+                if self.matriz[y][x] != 1:
+                    hijo = Nodo(self.matriz, (y, x), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
                     hijos.append(hijo)
         
@@ -48,6 +49,7 @@ class Nodo:
         cola = Queue()
         cola.put(self)
         self.visitados.add( ( tuple(self.posicion), 0) )  # Inicializar con 0 objetivos recolectados
+        nodos_expandidos = 0
 
         while not cola.empty():    
             
@@ -57,6 +59,7 @@ class Nodo:
             if nodo.matriz[nodo.posicion[0]][nodo.posicion[1]] == 4 and nodo.posicion not in nodo.objetivos_posiciones:
                 nodo.objetivos_posiciones.append(nodo.posicion)
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
+                        nodo.nodos_expandidos = nodos_expandidos
                         return nodo
 
             # Generar hijos y procesar
@@ -68,7 +71,10 @@ class Nodo:
                 # print("Estado: ", estado)   
                 if estado not in nodo.visitados:
                     hijo.visitados.add(estado)        
-                    cola.put(hijo)         
+                    cola.put(hijo)     
+            
+            nodos_expandidos += 1
+               
                 
         return None
             
