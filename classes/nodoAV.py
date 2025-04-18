@@ -28,10 +28,20 @@ class NodoAvara:
 
     def distancia_promedio_a_objetivos(self):
         # Calcula la distancia promedio a todos los objetivos restantes
-        if not self.objetivos_posiciones:
+        objetivos_restantes = [obj for obj in self.obtener_pos_objetivos() if obj not in self.objetivos_posiciones]
+        if not objetivos_restantes:
             return 0  # Si no hay objetivos restantes, la distancia es 0
-        distancias = [self.distancia_manhattan(self.posicion, obj) for obj in self.objetivos_posiciones]
+        distancias = [self.distancia_manhattan(self.posicion, obj) for obj in objetivos_restantes]
         return sum(distancias) / len(distancias)
+
+    def obtener_pos_objetivos(self):
+        # Obtiene las posiciones de los objetivos en la matriz
+        posiciones = []
+        for i in range(len(self.matriz)):
+            for j in range(len(self.matriz[0])):
+                if self.matriz[i][j] == 4:
+                    posiciones.append((i, j))
+        return posiciones
 
     def ver_matriz(self, matriz):
         result = ""
@@ -79,6 +89,7 @@ class NodoAvara:
             for hijo in hijos:
                 estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
                 if estado not in nodo.visitados:
+                    print(hijo.distancia_promedio_a_objetivos(), hijo.posicion, hijo.objetivos_posiciones)
                     hijo.visitados.add(estado)
                     heapq.heappush(cola_prioridad, (hijo.distancia_promedio_a_objetivos(), hijo.operador, contador_global, hijo))
                     contador_global += 1
