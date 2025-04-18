@@ -9,7 +9,9 @@ def show_results_window(selection_window, nodo_result, mapa_path):
         selection_window.deiconify() 
     
     
-    results_window = ttk.Toplevel(resizable=(False, False) )
+    results_window = ttk.Toplevel(resizable=(False, False))
+    results_window.protocol("WM_DELETE_WINDOW", volver_seleccion)
+
     
     
     # Frame principal

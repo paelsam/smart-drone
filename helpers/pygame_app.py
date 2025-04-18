@@ -6,6 +6,7 @@ from classes.nodo import Nodo
 from classes.nodoCU import NodoCU
 from classes.nodoPD import NodoPD
 from classes.nodoAV import NodoAvara
+from classes.nodeAEstrella import NodoAEstrella
 
 # MOVE_EVENT = pygame.USEREVENT + 1
 
@@ -28,7 +29,7 @@ def start_pygame(algoritmo, mapa_path):
         "Reducción de Coste": NodoCU,
         "Profundidad": NodoPD,
         "Avaro": NodoAvara,
-        "A*": Nodo
+        "A*": NodoAEstrella
     }
     
     
