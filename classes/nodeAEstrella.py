@@ -3,7 +3,7 @@ from helpers.process_map import process_map
 from helpers.determinar_operador import determinar_operador
 from colorama import Fore, Style
 
-class NodoAvara:
+class NodoAEstrella:
     def __init__(self, matriz, posicion, objetivos, padre=None, operador=None):
         self.matriz = matriz
         self.padre = padre
@@ -61,7 +61,7 @@ class NodoAvara:
             
             if 0 <= y < len(self.matriz) and 0 <= x < len(self.matriz[0]):
                 if self.matriz[y][x] != 1:
-                    hijo = NodoAvara(self.matriz, (y, x), self.objetivos, self, op)
+                    hijo = NodoAEstrella(self.matriz, (y, x), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
                     hijos.append(hijo)
         return hijos
@@ -69,7 +69,7 @@ class NodoAvara:
     def buscar_objetivos(self):
         cola_prioridad = []
         contador_global = 0  # Contador global para orden determinístico
-        heapq.heappush(cola_prioridad, (self.distancia_promedio_a_objetivos(), self.operador, contador_global, self))
+        heapq.heappush(cola_prioridad, (self.distancia_promedio_a_objetivos() + self.costo, self.operador, contador_global, self))
         contador_global += 1
         self.visitados.add((tuple(self.posicion), 0))  # Inicializar con 0 objetivos recolectados
         nodos_expandidos = 0
@@ -91,7 +91,7 @@ class NodoAvara:
                 if estado not in nodo.visitados:
                     print(hijo.distancia_promedio_a_objetivos(), hijo.posicion, hijo.objetivos_posiciones)
                     hijo.visitados.add(estado)
-                    heapq.heappush(cola_prioridad, (hijo.distancia_promedio_a_objetivos(), hijo.operador, contador_global, hijo))
+                    heapq.heappush(cola_prioridad, (hijo.distancia_promedio_a_objetivos() + hijo.costo, hijo.operador, contador_global, hijo))
                     contador_global += 1
             
             nodos_expandidos += 1

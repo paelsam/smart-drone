@@ -1,53 +1,128 @@
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from ttkbootstrap.scrolled import ScrolledFrame
 import tkinter as tk
-from tkinter import ttk
 
-def show_results_window(nodo_result, mapa_path):
+def show_results_window(selection_window, nodo_result, mapa_path):
     def volver_seleccion():
         results_window.destroy()
-        from main import main_flow
-        main_flow()
+        selection_window.deiconify() 
     
-    results_window = tk.Tk()
-    results_window.title("Smart Drone - Resultados")
-    results_window.geometry("400x500")
-    results_window.resizable(False, False)
+    
+    results_window = ttk.Toplevel(resizable=(False, False))
+    results_window.protocol("WM_DELETE_WINDOW", volver_seleccion)
+
     
     
     # Frame principal
-    main_frame = ttk.Frame(results_window)
-    main_frame.pack(padx=20, pady=20, fill='both', expand=True)
+    main_frame = ttk.Frame(results_window, padding=15)
+    main_frame.pack(fill=BOTH, expand=YES)
+    
+    # Título de resultados
+    title_label = ttk.Label(
+        main_frame,
+        text="Resultados de la Navegación",
+        font=("TkDefaultFont", 18, "bold"),
+        bootstyle="primary"
+    )
+    title_label.pack(pady=(0, 15))
     
     # Sección de información general
-    info_frame = ttk.LabelFrame(main_frame, text="Información del Recorrido")
-    info_frame.pack(fill='x', pady=10)
+    info_frame = ttk.Labelframe(
+        main_frame, 
+        text="Información del Recorrido",
+        padding=10,
+        bootstyle="info"
+    )
+    info_frame.pack(fill=X, pady=10)
     
-    labels = [
-        f"Algoritmo utilizado: {nodo_result['algoritmo']}",
-        f"Archivo de mapa: {mapa_path}",
-        f"Profundidad: {nodo_result['profundidad']}",
-        f"Nodos expandidos: {nodo_result['nodos_expandidos']}",
-        f"Costo total: {nodo_result['costo']}",
-        f"Objetivos alcanzados: {len(nodo_result['objetivos_posiciones'])}",
-        f"Tiempo de cómputo: {nodo_result['tiempo_computo']:.4f} segundos"
+    # Crear grid para información más organizada
+    info_grid = ttk.Frame(info_frame)
+    info_grid.pack(fill=X, expand=YES)
+    
+    # Definir datos para la grid
+    info_data = [
+        ("Algoritmo utilizado:", nodo_result['algoritmo']),
+        ("Archivo de mapa:", mapa_path),
+        ("Profundidad:", str(nodo_result['profundidad'])),
+        ("Nodos expandidos:", str(nodo_result['nodos_expandidos'])),
+        ("Costo total:", str(nodo_result['costo'])),
+        ("Objetivos alcanzados:", str(len(nodo_result['objetivos_posiciones']))),
+        ("Tiempo de cómputo:", f"{nodo_result['tiempo_computo']:.4f} segundos")
     ]
     
-    for label in labels:
-        ttk.Label(info_frame, text=label).pack(anchor='w')
+    # Crear etiquetas en el grid
+    for i, (label_text, value_text) in enumerate(info_data):
+        label = ttk.Label(
+            info_grid, 
+            text=label_text,
+            font=("TkDefaultFont", 10, "bold"),
+            width=20,
+            anchor=W
+        )
+        label.grid(row=i, column=0, sticky=W, pady=3)
+        
+        value = ttk.Label(
+            info_grid,
+            text=value_text,
+            bootstyle="secondary"
+        )
+        value.grid(row=i, column=1, sticky=W, pady=3)
     
-    # Sección de ruta
-    ruta_frame = ttk.LabelFrame(main_frame, text="Ruta Tomada")
-    ruta_frame.pack(fill='both', expand=True, pady=10)
+    # Sección de ruta con scrolled frame
+    ruta_frame = ttk.Labelframe(
+        main_frame, 
+        text="Ruta Tomada",
+        padding=10,
+        bootstyle="primary"
+    )
+    ruta_frame.pack(fill=BOTH, expand=YES, pady=10)
     
-    scrollbar = ttk.Scrollbar(ruta_frame)
-    scrollbar.pack(side='right', fill='y')
+    # Frame con scroll (sin usar el componente Meter que causaba problemas)
+    scrolled = ScrolledFrame(ruta_frame, autohide=True)
+    scrolled.pack(fill=BOTH, expand=YES)
     
-    listbox = tk.Listbox(ruta_frame, yscrollcommand=scrollbar.set, width=50)
-    for posicion in nodo_result['ruta']:
-        listbox.insert('end', f"({posicion[0]}, {posicion[1]})")
-    listbox.pack(fill='both', expand=True)
-    scrollbar.config(command=listbox.yview)
+    # Listado de coordenadas con estilo alternante para mejor legibilidad
+    for i, posicion in enumerate(nodo_result['ruta']):
+        row_style = "primary" if i % 2 == 0 else "secondary"
+        pos_frame = ttk.Frame(scrolled, bootstyle=row_style)
+        pos_frame.pack(fill=X, pady=1)
+        
+        ttk.Label(
+            pos_frame,
+            text=f"Paso {i+1}:",
+            width=8,
+            bootstyle=row_style
+        ).pack(side=LEFT, padx=5, pady=3)
+        
+        ttk.Label(
+            pos_frame,
+            text=f"({posicion[0]}, {posicion[1]})",
+            bootstyle=row_style
+        ).pack(side=LEFT, padx=5, pady=3)
     
-    # Botón de regreso
-    ttk.Button(main_frame, text="Volver a Selección", command=volver_seleccion).pack(pady=10)
+    # Botón de regreso con icono
+    action_frame = ttk.Frame(main_frame)
+    action_frame.pack(fill=X, pady=(10, 0))
+    
+    ttk.Button(
+        action_frame, 
+        text="Volver a Selección",
+        command=volver_seleccion,
+        bootstyle="outline-secondary",
+        width=20
+    ).pack(side=RIGHT)
+    
+    # Footer - créditos
+    footer = ttk.Label(
+        main_frame, 
+        text="Smart Drone - Análisis de Resultados",
+        bootstyle="secondary",
+        font=("TkDefaultFont", 8)
+    )
+    footer.pack(side=BOTTOM, pady=5)
+    
+    # Centrar ventana
+    results_window.place_window_center()
     
     results_window.mainloop()
