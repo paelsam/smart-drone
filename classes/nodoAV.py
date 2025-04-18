@@ -10,27 +10,20 @@ class NodoAvara:
         self.operador = operador
         self.profundidad = 0 if padre == None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = 0 if padre == None else padre.costo + self.calcular_costo_casilla()
+        self.costo = 0 if padre == None else padre.costo + 1
         self.objetivos = objetivos
         self.visitados = set(padre.visitados) if padre != None else set()
         self.objetivos_posiciones = []
         self.nodos_expandidos = 0
 
-    def calcular_costo_casilla(self):
-        if self.matriz[self.posicion[0]][self.posicion[1]] == 3:
-            return 8
-        else:
-            return 1
-
     def distancia_manhattan(self, pos1, pos2):
-        # Calcula la distancia Manhattan entre dos posiciones (filas, columnas)
         return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 
     def distancia_promedio_a_objetivos(self):
         # Calcula la distancia promedio a todos los objetivos restantes
         objetivos_restantes = [obj for obj in self.obtener_pos_objetivos() if obj not in self.objetivos_posiciones]
         if not objetivos_restantes:
-            return 0  # Si no hay objetivos restantes, la distancia es 0
+            return 0
         distancias = [self.distancia_manhattan(self.posicion, obj) for obj in objetivos_restantes]
         return sum(distancias) / len(distancias)
 

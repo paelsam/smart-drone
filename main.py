@@ -1,5 +1,4 @@
 from helpers.tkinter_app import start_selection
-from helpers.pygame_app import start_pygame
 
 
 def main_flow():

@@ -23,7 +23,6 @@ class NodoAEstrella:
             return 1
 
     def distancia_manhattan(self, pos1, pos2):
-        # Calcula la distancia Manhattan entre dos posiciones (filas, columnas)
         return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 
     def distancia_promedio_a_objetivos(self):
