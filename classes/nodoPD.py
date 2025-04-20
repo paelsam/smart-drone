@@ -8,11 +8,11 @@ class NodoPD:
         self.matriz = matriz
         self.padre = padre
         self.operador = operador
-        self.profundidad = 1 if padre is None else padre.profundidad + 1
+        self.profundidad = 0 if padre == None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = 1 if padre is None else padre.costo + 1
+        self.costo = 0 if padre == None else padre.costo + 1
         self.objetivos = objetivos
-        self.visitados = set() if padre is None else set(padre.visitados)
+        self.visitados = set(padre.visitados) if padre != None else set() 
         self.objetivos_posiciones = []
         self.nodos_expandidos = 0
 
@@ -35,7 +35,6 @@ class NodoPD:
                 if self.matriz[y][x] != 1:
                     hijo = NodoPD(self.matriz, (y, x), self.objetivos, self, op)
                     hijo.objetivos_posiciones = self.objetivos_posiciones.copy()
-                    hijo.visitados.add((y, x))
                     hijos.append(hijo)
         
         return hijos
@@ -54,6 +53,7 @@ class NodoPD:
                 if len(nodo.objetivos_posiciones) == nodo.objetivos:
                     nodo.nodos_expandidos = nodos_expandidos
                     return nodo
+                nodo.visitados.add((tuple(nodo.posicion), len(nodo.objetivos_posiciones)))
 
             hijos = nodo.generar_hijos()
             for hijo in reversed(hijos):
