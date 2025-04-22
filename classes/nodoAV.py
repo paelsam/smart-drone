@@ -82,7 +82,7 @@ class NodoAvara:
             for hijo in hijos:
                 estado = (tuple(hijo.posicion), len(hijo.objetivos_posiciones))
                 if estado not in nodo.visitados:
-                    print(hijo.distancia_promedio_a_objetivos(), hijo.posicion, hijo.objetivos_posiciones)
+                    # print(hijo.distancia_promedio_a_objetivos(), hijo.posicion, hijo.objetivos_posiciones)
                     hijo.visitados.add(estado)
                     heapq.heappush(cola_prioridad, (hijo.distancia_promedio_a_objetivos(), hijo.operador, contador_global, hijo))
                     contador_global += 1

@@ -62,13 +62,13 @@ def start_pygame(algoritmo, mapa_path):
     for i in range(ROWS):
         for j in range(COLUMNS):
             if matrix[i][j] == 1:
-                wall = Sprite("./assets/img/wall.jpg", j * CELL_WIDTH, i * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
+                wall = Sprite("./assets/img/wall.png", j * CELL_WIDTH, i * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
                 wall_sprites.add(wall)
             elif matrix[i][j] == 2 and not drone:
                 drone = Sprite("./assets/img/drone.png", j * CELL_WIDTH, i * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
                 dinamic_sprites.add(drone)
             elif matrix[i][j] == 4:
-                package = Sprite("./assets/img/package.jpg", j * CELL_WIDTH, i * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
+                package = Sprite("./assets/img/package.png", j * CELL_WIDTH, i * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
                 package_sprites.add(package)
             elif matrix[i][j] == 3:
                 electric_wall = Sprite("./assets/img/electric-wall.png", j * CELL_WIDTH, i * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
