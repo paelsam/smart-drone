@@ -1,0 +1,5 @@
+colorama==0.4.6
+dearpygui==2.0.0
+pillow==11.2.1
+pygame==2.6.1
+ttkbootstrap==1.12.0
