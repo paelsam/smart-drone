@@ -10,7 +10,7 @@ class NodoCU:
         self.operador = operador
         self.profundidad = 1 if padre == None else padre.profundidad + 1
         self.posicion = posicion
-        self.costo = self.calcular_costo_casilla() if padre == None else padre.costo + self.calcular_costo_casilla()
+        self.costo = 0 if padre == None else padre.costo + self.calcular_costo_casilla()
         self.objetivos = objetivos
         self.visitados = set(padre.visitados) if padre != None else set()
         self.objetivos_posiciones = []
